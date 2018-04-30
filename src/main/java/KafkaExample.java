@@ -11,15 +11,16 @@ import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Properties;
 
 public class KafkaExample {
-    private final String topic;
     private final String brokers;
+    private final String topic;
 
-    public KafkaExample(String brokers) {
-        this.topic = "hello";
+    public KafkaExample(String brokers, String topic) {
         this.brokers = brokers;
+        this.topic = topic;
     }
 
     public void consume() {
@@ -70,8 +71,9 @@ public class KafkaExample {
     }
 
     public static void main(String[] args) {
-        String brokers = System.getenv("KAFKA_BROKERS");
-        KafkaExample c = new KafkaExample(brokers);
+        String topic = Optional.ofNullable(System.getenv("KAFKA_TOPIC")).orElse("hello");
+        String brokers = Optional.ofNullable(System.getenv("KAFKA_BROKERS")).orElse("localhost:9092");
+        KafkaExample c = new KafkaExample(brokers, topic);
         c.produce();
         c.consume();
     }
