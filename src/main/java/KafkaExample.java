@@ -8,6 +8,8 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -24,6 +26,7 @@ public class KafkaExample {
     }
 
     public void consume() {
+        Logger log = LoggerFactory.getLogger("kafaka-consumer");
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "demo-consumer");
@@ -39,7 +42,7 @@ public class KafkaExample {
         while (true) {
             ConsumerRecords<String, String> records = consumer.poll(1000);
             for (ConsumerRecord<String, String> record : records) {
-                System.out.printf("%s [%d] offset=%d, key=%s, value=\"%s\"\n",
+                log.info("{} [{}] offset={}, key={}, value=\"{}\"",
                         record.topic(), record.partition(),
                         record.offset(), record.key(), record.value());
             }
@@ -47,6 +50,7 @@ public class KafkaExample {
     }
 
     public void produce() {
+        Logger log = LoggerFactory.getLogger("kafaka-producer");
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
@@ -63,7 +67,7 @@ public class KafkaExample {
                         i++;
                     }
                 } catch (InterruptedException v) {
-                    System.out.println(v);
+                    log.info("interrupted", v);
                 }
             }
         };
