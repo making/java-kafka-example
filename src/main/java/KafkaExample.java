@@ -4,8 +4,8 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -40,9 +40,9 @@ public class KafkaExample {
             ConsumerRecords<String, String> records = consumer.poll(1000);
             for (ConsumerRecord<String, String> record : records) {
                 System.out.printf("%s [%d] offset=%d, key=%s, value=\"%s\"\n",
-								  record.topic(), record.partition(),
-								  record.offset(), record.key(), record.value());
-			}
+                        record.topic(), record.partition(),
+                        record.offset(), record.key(), record.value());
+            }
         }
     }
 
@@ -52,7 +52,7 @@ public class KafkaExample {
                 try {
                     Producer<String, String> producer = new KafkaProducer<>(props);
                     int i = 0;
-                    while(true) {
+                    while (true) {
                         Date d = new Date();
                         producer.send(new ProducerRecord<>(topic, Integer.toString(i), d.toString()));
                         Thread.sleep(1000);
@@ -67,8 +67,8 @@ public class KafkaExample {
     }
 
     public static void main(String[] args) {
-		String brokers = System.getenv("KAFKA_BROKERS");
-		KafkaExample c = new KafkaExample(brokers);
+        String brokers = System.getenv("KAFKA_BROKERS");
+        KafkaExample c = new KafkaExample(brokers);
         c.produce();
         c.consume();
     }
