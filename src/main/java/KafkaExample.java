@@ -15,17 +15,14 @@ public class KafkaExample {
     private final String topic;
     private final Properties props;
 
-    public KafkaExample(String brokers, String username, String password) {
-        this.topic = username + "-default";
-
-        String jaasTemplate = "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";";
-        String jaasCfg = String.format(jaasTemplate, username, password);
+    public KafkaExample(String brokers) {
+        this.topic = "hello";
 
         String serializer = StringSerializer.class.getName();
         String deserializer = StringDeserializer.class.getName();
         props = new Properties();
         props.put("bootstrap.servers", brokers);
-        props.put("group.id", username + "-consumer");
+        props.put("group.id", "demo-consumer");
         props.put("enable.auto.commit", "true");
         props.put("auto.commit.interval.ms", "1000");
         props.put("auto.offset.reset", "earliest");
@@ -34,9 +31,6 @@ public class KafkaExample {
         props.put("value.deserializer", deserializer);
         props.put("key.serializer", serializer);
         props.put("value.serializer", serializer);
-        props.put("security.protocol", "SASL_SSL");
-        props.put("sasl.mechanism", "SCRAM-SHA-256");
-        props.put("sasl.jaas.config", jaasCfg);
     }
 
     public void consume() {
@@ -73,10 +67,8 @@ public class KafkaExample {
     }
 
     public static void main(String[] args) {
-		String brokers = System.getenv("CLOUDKARAFKA_BROKERS");
-		String username = System.getenv("CLOUDKARAFKA_USERNAME");
-		String password = System.getenv("CLOUDKARAFKA_PASSWORD");
-		KafkaExample c = new KafkaExample(brokers, username, password);
+		String brokers = System.getenv("KAFKA_BROKERS");
+		KafkaExample c = new KafkaExample(brokers);
         c.produce();
         c.consume();
     }
