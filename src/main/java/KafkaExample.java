@@ -6,6 +6,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
@@ -36,7 +37,7 @@ public class KafkaExample {
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "30000");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-
+        configureTls(props);
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Arrays.asList(topic));
         while (true) {
@@ -55,6 +56,7 @@ public class KafkaExample {
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        configureTls(props);
         Thread one = new Thread() {
             public void run() {
                 try {
@@ -72,6 +74,18 @@ public class KafkaExample {
             }
         };
         one.start();
+    }
+
+    public void configureTls(Properties props) {
+        props.put("security.protocol", "SSL");
+        props.put(SslConfigs.SSL_ENABLED_PROTOCOLS_CONFIG, "TLSv1.2");
+        props.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, "/tmp/kafka-keystore.jks");
+        props.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, "changeme");
+        props.put(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG, "PKCS12");
+        //props.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, "changeme");
+        props.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, "/tmp/kafka-truststore.jks");
+        props.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, "changeme");
+        props.put(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG, "PKCS12");
     }
 
     public static void main(String[] args) {
